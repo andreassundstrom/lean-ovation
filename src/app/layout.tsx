@@ -1,8 +1,12 @@
+import {
+  Container,
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import theme from "./theme";
+import Auth from "./Auth";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </head>
+      <CssBaseline />
+      <body>
+        <Auth>
+          <ThemeProvider theme={theme}>
+            <Container>{children}</Container>
+          </ThemeProvider>
+        </Auth>
+      </body>
     </html>
   );
 }
