@@ -8,6 +8,12 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### MongoDb
+
+```ps
+docker run --name mongodb -d -p 27017:27017 mongo:7.0
+```
+
 ### Configure signin
 
 Add `.env.local` to root folder with configuration:

@@ -7,6 +7,7 @@ import {
 import type { Metadata } from "next";
 import theme from "./theme";
 import Auth from "./Auth";
+import Navbar from "./Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +28,8 @@ export default function RootLayout({
       <body>
         <Auth>
           <ThemeProvider theme={theme}>
-            <Container>{children}</Container>
+            <Navbar />
+            <Container sx={{ py: 8 }}>{children}</Container>
           </ThemeProvider>
         </Auth>
       </body>
