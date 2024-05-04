@@ -9,6 +9,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Navbar() {
   const { data: session } = useSession();
   const user_name = session?.user?.name;
+
   return (
     <AppBar>
       <Toolbar sx={{ justifyContent: "end" }}>
