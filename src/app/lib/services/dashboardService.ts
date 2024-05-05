@@ -1,6 +1,6 @@
 import { ObjectId, PushOperator } from "mongodb";
 import clientPromise from "../mongodb";
-import Dashboard, { Column } from "@/app/types/databaseTypes";
+import Dashboard, { Column, Note } from "@/app/types/databaseTypes";
 
 const dashboardCollection = "dashboards";
 
@@ -30,14 +30,39 @@ export async function addColumnToDashboard(
   column: Column
 ) {
   let client = await clientPromise;
-
+  column._id = new ObjectId();
   const dashboard = await client
     .db()
     .collection(dashboardCollection)
     .updateOne(
       { _id: new ObjectId(dashboardId) },
       {
-        $push: { columns: column } as unknown as PushOperator<Document>,
+        $push: {
+          columns: column,
+        } as unknown as PushOperator<Document>,
+      }
+    );
+}
+
+export async function addNoteToColumn(
+  dashboardId: string,
+  columnId: string,
+  note: Note
+) {
+  let client = await clientPromise;
+  note._id = new ObjectId();
+  await client
+    .db()
+    .collection(dashboardCollection)
+    .updateOne(
+      {
+        _id: new ObjectId(dashboardId),
+        "columns._id": new ObjectId(columnId),
+      },
+      {
+        $push: {
+          "columns.$.notes": note,
+        } as PushOperator<Document>,
       }
     );
 }

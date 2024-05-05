@@ -12,7 +12,6 @@ import Dialog from "@mui/material/Dialog";
 import { useState } from "react";
 
 import { Column } from "../types/databaseTypes";
-import { useRouter } from "next/router";
 
 export default function AddColumn({
   dashboardId,
