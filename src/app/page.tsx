@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import DashboardsList from "./DashboardsList";
+import DashboardsList from "./components/DashboardsList";
 import clientPromise from "./lib/mongodb";
 import Dashboard from "./types/databaseTypes";
 

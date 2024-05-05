@@ -1,4 +1,5 @@
 import clientPromise from "@/app/lib/mongodb";
+import Dashboard from "@/app/types/databaseTypes";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -13,8 +14,11 @@ export async function GET() {
   return await Response.json(collections);
 }
 
-export async function POST(dashboard: CreateDashboard) {
+export async function POST(request: Request) {
+  var dashboard = (await request.json()) as Dashboard;
   let client = await clientPromise;
 
-  await client.db().collection("dashboards").insertOne(dashboard);
+  var res = await client.db().collection("dashboards").insertOne(dashboard);
+
+  return new Response(res.insertedId.toString(), { status: 200 });
 }
