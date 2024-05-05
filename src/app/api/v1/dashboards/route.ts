@@ -1,17 +1,11 @@
 import clientPromise from "@/app/lib/mongodb";
+import { getDashboards } from "@/app/lib/services/dashboardService";
 import Dashboard from "@/app/types/databaseTypes";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
-  let client = await clientPromise;
-
-  const collections = await client
-    .db()
-    .collection("dashboards")
-    .find()
-    .toArray();
-
-  return await Response.json(collections);
+  const dashboards = await getDashboards();
+  return await Response.json(dashboards);
 }
 
 export async function POST(request: Request) {

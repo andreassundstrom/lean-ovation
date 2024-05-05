@@ -40,9 +40,9 @@ export default function DashboardsList() {
               <ListItem key={i}>
                 <Button
                   component={Link}
-                  href={`/dashboard/${v.id?.toString("base64")}`}
+                  href={`/dashboard/${v._id?.toString("base64")}`}
                 >
-                  {v.name}
+                  {v.name ?? "No name"}
                 </Button>
               </ListItem>
             ))}
