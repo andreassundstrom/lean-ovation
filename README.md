@@ -22,4 +22,5 @@ Add `.env.local` to root folder with configuration:
 AZURE_AD_CLIENT_ID={...}
 AZURE_AD_CLIENT_SECRET={...}
 AZURE_AD_TENANT_ID={...}
+MONGODB_URI=mongodb://localhost:27017/lean-ovation
 ```
