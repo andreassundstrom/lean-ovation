@@ -8,11 +8,13 @@ export default async function Home() {
   return (
     <main>
       <Grid container>
-        <Grid column sm={2} xs={4}>
+        <Grid item sm={2} xs={4}>
           <DashboardsList />
         </Grid>
-        <Grid column sm={8} xs={8}>
-          <Typography variant="h2">Hello World 🌍</Typography>
+        <Grid item sm={10} xs={8}>
+          <Typography textAlign="center" variant="h2">
+            Lean-ovation
+          </Typography>
         </Grid>
       </Grid>
     </main>

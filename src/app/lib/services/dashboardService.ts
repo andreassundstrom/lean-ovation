@@ -1,4 +1,4 @@
-import { ObjectId, PushOperator } from "mongodb";
+import { FindOptions, ObjectId, PushOperator } from "mongodb";
 import clientPromise from "../mongodb";
 import Dashboard, { Column, Note } from "@/app/types/databaseTypes";
 
@@ -20,6 +20,7 @@ export async function getDashboards() {
     .db()
     .collection(dashboardCollection)
     .find()
+    .project({ name: 1 })
     .toArray();
 
   return collections;

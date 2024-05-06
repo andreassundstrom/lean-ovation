@@ -23,4 +23,7 @@ AZURE_AD_CLIENT_ID={...}
 AZURE_AD_CLIENT_SECRET={...}
 AZURE_AD_TENANT_ID={...}
 MONGODB_URI=mongodb://localhost:27017/lean-ovation
+NEXTAUTH_SECRET={...}
 ```
+
+`NEXTAUTH_SECRET` is used for encryption by next auth. Generate it via `openssl rand -base64 32`.
