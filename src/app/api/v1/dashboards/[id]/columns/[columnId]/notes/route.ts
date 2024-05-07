@@ -1,4 +1,3 @@
-import clientPromise from "@/app/lib/mongodb";
 import { addNoteToColumn } from "@/app/lib/services/dashboardService";
 import { Note } from "@/app/types/databaseTypes";
 
