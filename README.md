@@ -1,3 +1,7 @@
+## Demo
+
+See the [live demo](https://lean-ovation-at.azurewebsites.net/).
+
 ## Getting Started
 
 First, run the development server:
