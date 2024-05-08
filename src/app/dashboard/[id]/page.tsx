@@ -17,6 +17,8 @@ import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import { AddCircle } from "@mui/icons-material";
 import AddNoteColumn from "@/app/components/AddNoteColumn";
+import ColumnDisplay from "./column";
+import { DndContext } from "@dnd-kit/core";
 
 export default function DashboardIdPage({
   params,
@@ -69,24 +71,15 @@ export default function DashboardIdPage({
             />
           )}
           <Grid container spacing={2}>
-            {dashboard.columns?.map((column, i) => (
-              <Grid sx={{ my: 2 }} item key={i} flexGrow={1}>
-                <Typography textAlign={"center"} variant="h5">
-                  {column.name}
-                  <IconButton>
-                    <AddCircle onClick={() => setAddNoteColumn(column)} />
-                  </IconButton>
-                </Typography>
-                {column.notes?.map((note, noteKey) => (
-                  <Card key={noteKey} sx={{ my: 2 }}>
-                    <CardContent>
-                      <Typography>{note.description}</Typography>
-                      <Typography variant="caption">{note.name}</Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Grid>
-            ))}
+            <DndContext>
+              {dashboard.columns?.map((column, i) => (
+                <ColumnDisplay
+                  key={i}
+                  column={column}
+                  setAddNoteColumn={(col) => setAddNoteColumn(col)}
+                />
+              ))}
+            </DndContext>
           </Grid>
         </>
       )}
