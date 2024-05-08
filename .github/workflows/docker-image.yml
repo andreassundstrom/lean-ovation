@@ -17,6 +17,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PAT }}
+    - name: Azure login
+      uses: Azure/login@v2.1.0
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Docker Metadata action
       id: meta
       uses: docker/metadata-action@v5.0.0
@@ -28,10 +32,7 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-    - name: Azure login
-      uses: Azure/login@v2.1.0
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'lean-ovation-at'
