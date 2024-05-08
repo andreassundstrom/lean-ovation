@@ -3,8 +3,8 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # pull_request:
+  #  branches: [ "main" ]
 
 jobs:
   build-and-push:
@@ -32,11 +32,12 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-
-    - uses: azure/webapps-deploy@v2
+    - name: Deploy WebApp
+      uses: azure/webapps-deploy@v2
       with:
         app-name: 'lean-ovation-at'
-        images: 'andreassundstrom/lean-ovation:${{ steps.meta.outputs.tags }}'
+        images: 'andreassundstrom/lean-ovation:main'
+        restart: true
     - name: Azure logout
       run: |
         az logout
