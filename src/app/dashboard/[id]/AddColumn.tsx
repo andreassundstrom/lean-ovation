@@ -11,7 +11,7 @@ import {
 import Dialog from "@mui/material/Dialog";
 import { useState } from "react";
 
-import { Column } from "../types/databaseTypes";
+import { Column } from "../../types/databaseTypes";
 
 export default function AddColumn({
   dashboardId,

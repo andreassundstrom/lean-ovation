@@ -1,5 +1,5 @@
 import Dialog from "@mui/material/Dialog";
-import { Column, Note } from "../types/databaseTypes";
+import { Column, Note } from "../../types/databaseTypes";
 import {
   Button,
   DialogActions,
