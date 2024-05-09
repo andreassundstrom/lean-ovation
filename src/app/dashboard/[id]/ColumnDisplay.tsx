@@ -1,6 +1,6 @@
 import { Column } from "@/app/types/databaseTypes";
 import Typography from "@mui/material/Typography";
-import NoteDisplay from "./note";
+import NoteDisplay from "./NoteDisplay";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import { AddCircle } from "@mui/icons-material";
@@ -15,7 +15,7 @@ export default function ColumnDisplay({
   setAddNoteColumn: (column: Column) => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({
-    id: `column-${column._id?.toString()}`,
+    id: `${column._id?.toString()}`,
   });
   return (
     <Grid
@@ -26,7 +26,10 @@ export default function ColumnDisplay({
       item
       flexGrow={1}
     >
-      <Paper elevation={isOver ? 4 : 0}>
+      <Paper
+        elevation={isOver ? 4 : 0}
+        sx={{ "& .MuiCard-root": { mt: 2 }, p: 1 }}
+      >
         <Typography textAlign={"center"} variant="h5">
           {column.name}
           <IconButton>
@@ -34,7 +37,11 @@ export default function ColumnDisplay({
           </IconButton>
         </Typography>
         {column.notes?.map((note, noteKey) => (
-          <NoteDisplay key={noteKey} note={note} />
+          <NoteDisplay
+            key={noteKey}
+            note={note}
+            columnId={column._id?.toString() ?? ""}
+          />
         ))}
       </Paper>
     </Grid>

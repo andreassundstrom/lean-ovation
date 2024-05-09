@@ -5,9 +5,18 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { CSS } from "@dnd-kit/utilities";
 
-export default function NoteDisplay({ note }: { note: Note }) {
+export default function NoteDisplay({
+  note,
+  columnId,
+}: {
+  note: Note;
+  columnId: string;
+}) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `note-${note._id?.toString()}`,
+    id: `${note._id?.toString()}`,
+    data: {
+      columnId: columnId,
+    },
   });
   const style = transform
     ? {

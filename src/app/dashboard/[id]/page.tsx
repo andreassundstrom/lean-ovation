@@ -1,5 +1,5 @@
 "use client";
-import AddColumn from "@/app/components/AddColumn";
+import AddColumn from "@/app/dashboard/[id]/AddColumn";
 import { getDashboard } from "@/app/lib/services/dashboardService";
 import Dashboard, { Column } from "@/app/types/databaseTypes";
 import {
@@ -15,10 +15,10 @@ import {
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
-import { AddCircle } from "@mui/icons-material";
-import AddNoteColumn from "@/app/components/AddNoteColumn";
-import ColumnDisplay from "./column";
-import { DndContext } from "@dnd-kit/core";
+import AddNoteColumn from "@/app/dashboard/[id]/AddNoteColumn";
+import ColumnDisplay from "./ColumnDisplay";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { NoteUpdateDto } from "@/app/types/dtos";
 
 export default function DashboardIdPage({
   params,
@@ -48,6 +48,19 @@ export default function DashboardIdPage({
     getDashboard();
   };
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over) {
+      fetch(
+        `/api/v1/dashboards/${params.id}/columns/${active.data.current?.columnId}/notes/${active.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ columnId: over.id } as NoteUpdateDto),
+        }
+      ).then(() => getDashboard());
+    }
+  }
+
   return (
     <Box>
       {dashboard && (
@@ -71,7 +84,7 @@ export default function DashboardIdPage({
             />
           )}
           <Grid container spacing={2}>
-            <DndContext>
+            <DndContext onDragEnd={handleDragEnd}>
               {dashboard.columns?.map((column, i) => (
                 <ColumnDisplay
                   key={i}
