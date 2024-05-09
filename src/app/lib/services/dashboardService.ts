@@ -74,6 +74,10 @@ export async function moveNoteToColumn(
   fromColumnId: string,
   toColumnId: string
 ) {
+  if (fromColumnId === toColumnId) {
+    return;
+  }
+
   let client = await clientPromise;
   const dashboard = (await client
     .db()
