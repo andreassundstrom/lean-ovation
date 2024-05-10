@@ -50,14 +50,33 @@ export default function DashboardIdPage({
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+
     if (over) {
+      const fromColumnId = active.data.current?.columnId;
+      const toColumnId = over.id;
+      const noteId = active.id;
+
+      setDashboard((prev) => {
+        const newDashboard = { ...prev };
+        const fromColumn = newDashboard.columns?.find(
+          (p) => p._id?.toString() === fromColumnId
+        );
+
+        if (fromColumn) {
+          fromColumn.notes =
+            fromColumn.notes?.filter((p) => p._id?.toString() !== noteId) ?? [];
+        }
+
+        return newDashboard;
+      });
+
       fetch(
-        `/api/v1/dashboards/${params.id}/columns/${active.data.current?.columnId}/notes/${active.id}`,
+        `/api/v1/dashboards/${params.id}/columns/${fromColumnId}/notes/${noteId}`,
         {
           method: "PATCH",
-          body: JSON.stringify({ columnId: over.id } as NoteUpdateDto),
+          body: JSON.stringify({ columnId: toColumnId } as NoteUpdateDto),
         }
-      ).then(() => getDashboard());
+      ).finally(() => getDashboard());
     }
   }
 

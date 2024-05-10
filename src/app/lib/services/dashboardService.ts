@@ -1,4 +1,4 @@
-import { FindOptions, ObjectId, PushOperator } from "mongodb";
+import { FindOptions, ObjectId, PullOperator, PushOperator } from "mongodb";
 import clientPromise from "../mongodb";
 import Dashboard, { Column, Note } from "@/app/types/databaseTypes";
 
@@ -79,36 +79,42 @@ export async function moveNoteToColumn(
   }
 
   let client = await clientPromise;
-  const dashboard = (await client
-    .db()
-    .collection(dashboardCollection)
-    .findOne({ _id: new ObjectId(dashboardId) })) as Dashboard;
 
-  const sourceColumn = dashboard.columns?.find(
-    (v) => v._id?.toString() === fromColumnId
-  );
+  const dashboards = client.db().collection(dashboardCollection);
 
-  const destinationColumn = dashboard.columns?.find(
-    (v) => v._id?.toString() === toColumnId
-  );
-  const note = sourceColumn?.notes?.find((v) => v._id?.toString() === noteId);
+  // get note
+  const dashboard = (await dashboards.findOne({
+    _id: new ObjectId(dashboardId),
+  })) as Dashboard;
+  console.log(dashboard);
+  const note = dashboard.columns
+    ?.find((p) => p._id?.toString() == fromColumnId)
+    ?.notes?.find((p) => p._id?.toString() == noteId);
 
-  if (sourceColumn && destinationColumn && note) {
-    destinationColumn.notes?.push({ ...note });
-    sourceColumn.notes = sourceColumn.notes?.filter(
-      (v) => v._id?.toString() !== note._id?.toString()
-    );
-  } else {
-    throw new Error("Failed to lookup values in dashboard");
+  if (note === undefined) {
+    throw new Error(`Failed to get note ${noteId}`);
   }
 
-  await client
-    .db()
-    .collection(dashboardCollection)
-    .replaceOne(
-      {
-        _id: new ObjectId(dashboardId),
-      },
-      dashboard
-    );
+  // remove old
+  await dashboards.updateOne(
+    { _id: new ObjectId(dashboardId) },
+    {
+      $pull: {
+        "columns.$[].notes": { _id: new ObjectId(noteId) },
+      } as unknown as PullOperator<Document>,
+    }
+  );
+
+  // add new
+  await dashboards.updateOne(
+    {
+      _id: new ObjectId(dashboardId),
+      "columns._id": new ObjectId(toColumnId),
+    },
+    {
+      $push: {
+        "columns.$.notes": note,
+      } as PushOperator<Document>,
+    }
+  );
 }
