@@ -1,24 +1,15 @@
 "use client";
 import AddColumn from "@/app/dashboard/[id]/AddColumn";
-import { getDashboard } from "@/app/lib/services/dashboardService";
 import Dashboard, { Column } from "@/app/types/databaseTypes";
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  List,
-  Typography,
-} from "@mui/material";
+import { Button, ButtonGroup, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
-import AddNoteColumn from "@/app/dashboard/[id]/AddNoteColumn";
+import AddNote from "@/app/dashboard/[id]/AddNoteColumn";
 import ColumnDisplay from "./ColumnDisplay";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { NoteUpdateDto } from "@/app/types/dtos";
+import EditColumnOrderDialog from "./EditColumnOrderDialog";
 
 export default function DashboardIdPage({
   params,
@@ -27,12 +18,14 @@ export default function DashboardIdPage({
 }) {
   const [dashboard, setDashboard] = useState<Dashboard>();
   const [editColumn, setEditColumn] = useState<string>();
+  const [editColumnOrder, setEditColumnOrder] = useState<boolean>(false);
   const [addNoteColumn, setAddNoteColumn] = useState<Column>();
+  const [noteEdit, setNoteEdit] = useState<string>();
   useEffect(() => {
     getDashboard();
   }, [params.id]);
 
-  const getDashboard = () => {
+  const getDashboard = (): void => {
     fetch(`/api/v1/dashboards/${params.id}`)
       .then((res) => res.json())
       .then((data) => setDashboard(data));
@@ -46,6 +39,12 @@ export default function DashboardIdPage({
   const onNoteSaved = () => {
     setAddNoteColumn(undefined);
     getDashboard();
+  };
+  const onDashboardSave = (save: boolean) => {
+    setEditColumnOrder(false);
+    if (save) {
+      getDashboard();
+    }
   };
 
   function handleDragEnd(event: DragEndEvent) {
@@ -62,21 +61,12 @@ export default function DashboardIdPage({
           (p) => p._id?.toString() === fromColumnId
         );
 
-        if (fromColumn) {
-          fromColumn.notes =
-            fromColumn.notes?.filter((p) => p._id?.toString() !== noteId) ?? [];
-        }
-
         return newDashboard;
       });
 
-      fetch(
-        `/api/v1/dashboards/${params.id}/columns/${fromColumnId}/notes/${noteId}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({ columnId: toColumnId } as NoteUpdateDto),
-        }
-      ).finally(() => getDashboard());
+      fetch(`/api/v1/notes/${noteId}?columnId=${toColumnId}`, {
+        method: "PATCH",
+      }).finally(() => getDashboard());
     }
   }
 
@@ -84,9 +74,20 @@ export default function DashboardIdPage({
     <Box>
       {dashboard && (
         <>
-          <Typography variant="h3">{dashboard.name}</Typography>
+          {editColumnOrder && (
+            <EditColumnOrderDialog
+              handleClose={(save: boolean) => onDashboardSave(save)}
+              dashboard={dashboard}
+            />
+          )}
+          <Typography textAlign={"center"} variant="h3">
+            {dashboard.name}
+          </Typography>
           <ButtonGroup>
             <Button onClick={() => setEditColumn("0")}>Add column</Button>
+            <Button onClick={() => setEditColumnOrder(true)}>
+              Edit column order
+            </Button>
           </ButtonGroup>
           <AddColumn
             id={editColumn}
@@ -95,22 +96,25 @@ export default function DashboardIdPage({
             onSaved={() => onColumnSaved()}
           />
           {addNoteColumn && (
-            <AddNoteColumn
+            <AddNote
               onClose={() => setAddNoteColumn(undefined)}
               onSave={() => onNoteSaved()}
-              dashboardId={dashboard._id?.toString() ?? ""}
               column={addNoteColumn}
             />
           )}
           <Grid container spacing={2}>
             <DndContext onDragEnd={handleDragEnd}>
-              {dashboard.columns?.map((column, i) => (
-                <ColumnDisplay
-                  key={i}
-                  column={column}
-                  setAddNoteColumn={(col) => setAddNoteColumn(col)}
-                />
-              ))}
+              {dashboard.columns
+                ?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+                .map((column, i) => (
+                  <ColumnDisplay
+                    dashboardId={dashboard._id?.toString() ?? ""}
+                    setNoteEdit={(note) => setNoteEdit(note)}
+                    key={i}
+                    column={column}
+                    setAddNoteColumn={(col) => setAddNoteColumn(col)}
+                  />
+                ))}
             </DndContext>
           </Grid>
         </>

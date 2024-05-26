@@ -4,7 +4,8 @@ export class Note {
   constructor(
     public description: string,
     public name: string,
-    public _id?: ObjectId
+    public _id?: ObjectId,
+    public _columnId?: ObjectId
   ) {}
 }
 
@@ -12,7 +13,7 @@ export class Column {
   constructor(
     public name: string,
     public _id?: ObjectId,
-    public notes?: Note[]
+    public sortOrder?: number
   ) {}
 }
 

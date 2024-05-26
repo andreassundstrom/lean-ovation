@@ -9,13 +9,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export default function AddNoteColumn({
-  dashboardId,
+export default function AddNote({
   column,
   onClose,
   onSave,
 }: {
-  dashboardId: string;
   column: Column;
   onClose: () => void;
   onSave: () => void;
@@ -23,13 +21,10 @@ export default function AddNoteColumn({
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const saveNote = () => {
-    fetch(
-      `/api/v1/dashboards/${dashboardId}/columns/${column._id?.toString()}/notes`,
-      {
-        method: "POST",
-        body: JSON.stringify({ description: description, name: name } as Note),
-      }
-    ).then(() => onSave());
+    fetch(`/api/v1/notes?columnId=${column._id?.toString()}`, {
+      method: "POST",
+      body: JSON.stringify({ description: description, name: name } as Note),
+    }).then(() => onSave());
   };
   return (
     <Dialog open={true} fullWidth onClose={() => onClose()}>

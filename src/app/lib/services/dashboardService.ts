@@ -13,6 +13,21 @@ export async function getDashboard(id: string) {
   return dashboard;
 }
 
+export async function updateDashboard(id: string, updatedDashboard: Dashboard) {
+  const client = await clientPromise;
+  const dashboard = client.db().collection(dashboardCollection);
+  await dashboard.updateOne(
+    {
+      _id: new ObjectId(id),
+    },
+    {
+      $set: {
+        columns: updatedDashboard.columns,
+      },
+    }
+  );
+}
+
 export async function getDashboards() {
   let client = await clientPromise;
 
@@ -43,78 +58,4 @@ export async function addColumnToDashboard(
         } as unknown as PushOperator<Document>,
       }
     );
-}
-
-export async function addNoteToColumn(
-  dashboardId: string,
-  columnId: string,
-  note: Note
-) {
-  let client = await clientPromise;
-  note._id = note._id ?? new ObjectId();
-  await client
-    .db()
-    .collection(dashboardCollection)
-    .updateOne(
-      {
-        _id: new ObjectId(dashboardId),
-        "columns._id": new ObjectId(columnId),
-      },
-      {
-        $push: {
-          "columns.$.notes": note,
-        } as PushOperator<Document>,
-      }
-    );
-}
-
-export async function moveNoteToColumn(
-  noteId: string,
-  dashboardId: string,
-  fromColumnId: string,
-  toColumnId: string
-) {
-  if (fromColumnId === toColumnId) {
-    return;
-  }
-
-  let client = await clientPromise;
-
-  const dashboards = client.db().collection(dashboardCollection);
-
-  // get note
-  const dashboard = (await dashboards.findOne({
-    _id: new ObjectId(dashboardId),
-  })) as Dashboard;
-  console.log(dashboard);
-  const note = dashboard.columns
-    ?.find((p) => p._id?.toString() == fromColumnId)
-    ?.notes?.find((p) => p._id?.toString() == noteId);
-
-  if (note === undefined) {
-    throw new Error(`Failed to get note ${noteId}`);
-  }
-
-  // remove old
-  await dashboards.updateOne(
-    { _id: new ObjectId(dashboardId) },
-    {
-      $pull: {
-        "columns.$[].notes": { _id: new ObjectId(noteId) },
-      } as unknown as PullOperator<Document>,
-    }
-  );
-
-  // add new
-  await dashboards.updateOne(
-    {
-      _id: new ObjectId(dashboardId),
-      "columns._id": new ObjectId(toColumnId),
-    },
-    {
-      $push: {
-        "columns.$.notes": note,
-      } as PushOperator<Document>,
-    }
-  );
 }
